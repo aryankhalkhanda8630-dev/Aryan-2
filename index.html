@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Bestie! ✨</title>
+    <!-- Confetti Library for Celebrations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #ffeef8 0%, #daeaff 50%, #ffdbe9 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Screen Navigation Control */
+        .screen {
+            position: absolute;
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 25px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            z-index: 5;
+        }
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Reusable UI Components */
+        .btn-next {
+            background: linear-gradient(45deg, #ff4a85, #ff7ba4);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 74, 133, 0.4);
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+        .btn-next:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 74, 133, 0.6);
+        }
+        .photo-frame {
+            width: 95%;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+            border: 8px solid #fff;
+            background: #fff5f8;
+            animation: floatAnim 4s ease-in-out infinite;
+        }
+        .photo-frame img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            max-height: 480px;
+        }
+
+        /* --- PAGE 1: COUNTDOWN & FLOATING BALLOONS --- */
+        #countdown-container {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 40px;
+            border-radius: 30px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        #countdown-num {
+            font-size: 120px;
+            font-weight: 800;
+            color: #ff4a85;
+            line-height: 1;
+            text-shadow: 3px 5px 10px rgba(255, 74, 133, 0.2);
+        }
+        .balloon-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .balloon {
+            position: absolute;
+            bottom: -160px;
+            width: 85px;
+            height: 100px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            box-shadow: inset -6px -6px 20px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08);
+            animation: floatUp linear infinite;
+        }
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 38px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 9px solid rgba(0,0,0,0.15);
+        }
+        .balloon-img-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 10px auto 0;
+            border: 2px solid white;
+            background: #fff;
+        }
+        .balloon-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- PAGE 2: CELEBRATION CARD --- */
+        .wish-card {
+            background: white;
+            padding: 35px 25px;
+            border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.15);
+            width: 90%;
+            border: 2px solid #fff;
+        }
+        .wish-heading {
+            font-size: 32px;
+            color: #d63384;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        .meta-info {
+            background: #fff0f6;
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin: 15px 0;
+            font-size: 19px;
+            color: #4a4a4a;
+            font-weight: 500;
+            border: 1px dashed #ffb3d1;
+        }
+        .meta-info span { color: #ff4a85; font-weight: bold; }
+
+        /* --- PAGE 3: QUESTION POPUP --- */
+        .choice-box {
+            background: white;
+            padding: 35px 25px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            width: 85%;
+        }
+        .choice-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            position: relative;
+            height: 50px;
+        }
+        .btn-choice {
+            padding: 12px 35px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-yes { background-color: #2ecc71; color: white; box-shadow: 0 4px 15px rgba(46,204,113,0.3); }
+        .btn-no { background-color: #e74c3c; color: white; position: absolute; right: 20px; box-shadow: 0 4px 15px rgba(231,76,60,0.3); }
+
+        /* --- PAGE 4: PREMIUM 3-LAYER CAKE --- */
+        .cake-area {
+            position: relative;
+            width: 260px;
+            height: 300px;
+            margin-top: 20px;
+        }
+        .cake-3layer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .layer {
+            border-radius: 16px 16px 6px 6px;
+            box-shadow: inset 0 6px 0 rgba(255,255,255,0.4), 0 6px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .layer-bottom { width: 220px; height: 75px; background: #6d4c41; z-index: 1; }
+        .layer-middle { width: 175px; height: 60px; background: #ff8fa3; z-index: 2; margin-bottom: -5px; }
+        .layer-top { width: 130px; height: 50px; background: #fff3e0; z-index: 3; margin-bottom: -5px; }
+        
+        /* Premium Cream Frosting Overlay */
+        .layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px 16px 12px 12px;
+        }
+        .layer-middle::before { background: rgba(255, 230, 238, 0.8); }
+        .layer-bottom::before { background: rgba(245, 222, 179, 0.7); }
+
+        .candles-box {
+            position: absolute;
+            top: 75px;
+            width: 80px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        .candle-real {
+            width: 12px;
+            height: 40px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+        .candle-real:nth-child(2) {
+            background: linear-gradient(to right, #ff0844, #ffb199);
+        }
+        .flame-real {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 18px;
+            background: #ff9800;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 12px #ffeb3b, 0 0 20px #ff5722;
+            animation: flicker 0.1s infinite alternate;
+        }
+        .flame-real.blown { display: none; }
+
+        /* Premium Blade/Knife Asset */
+        .fancy-knife {
+            position: absolute;
+            width: 65px;
+            height: 20px;
+            background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 4px;
+            pointer-events: none;
+            z-index: 100;
+            transform: rotate(-30deg);
+            display: none;
+            box-shadow: 3px 5px 10px rgba(0,0,0,0.2);
+        }
+        .fancy-knife::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 2px;
+            width: 22px;
+            height: 16px;
+            background: #d35400;
+            border-radius: 5px 0 0 5px;
+        }
+
+        /* Line effect when cake cuts */
+        .cake-3layer.cut-done .layer::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            transform: translateX(-50%);
+        }
+
+        /* --- PAGE 6: EXQUISITE SHAYARI CARD --- */
+        .shayari-card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 35px 25px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(214, 51, 132, 0.12);
+            border-left: 8px solid #ff4a85;
+            border-right: 8px solid #ff4a85;
+            width: 92%;
+            line-height: 1.8;
+            backdrop-filter: blur(10px);
+        }
+        .shayari-text {
+            font-size: 16.5px;
+            color: #2c3e50;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        /* KEYFRAME ANIMATIONS */
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            85% { opacity: 1; }
+            100% { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+        }
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1.15) rotate(4deg); }
+        }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Knife Graphic Element -->
+    <div class="fancy-knife" id="app-knife"></div>
+
+    <!-- PAGE 1: DYNAMIC COUNTDOWN & PHOTO BALLOONS -->
+    <div class="screen" id="page-1">
+        <div class="balloon-container" id="balloon-box"></div>
+        <div id="countdown-container">
+            <div id="countdown-num">5</div>
+            <p style="color: #ff4a85; font-weight: 600; margin-top: 10px; font-size: 15px;">Making things ready... ✨</p>
+        </div>
+    </div>
+
+    <!-- PAGE 2: HAPPY BIRTHDAY BESTIE GREETING -->
+    <div class="screen hidden" id="page-2">
+        <div class="wish-card">
+            <h1 class="wish-heading">🎉 Happy Birthday Bestie! 🥳</h1>
+            <div class="meta-info">📅 Date: <span>22 July 2007</span></div>
+            <div class="meta-info">⏰ Time: <span>8:00 AM</span></div>
+            <button class="btn-next" onclick="navigatePage(2, 3)">Next Step 😍</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: INTERACTIVE PROMPT QUESTION -->
+    <div class="screen hidden" id="page-3">
+        <div class="choice-box">
+            <h2 style="color: #d63384; margin-bottom: 12px; font-size: 24px;">Cake Cutting Time! 🎂</h2>
+            <p style="color: #555; font-weight: 500;">Kya cake cutting process start karein?</p>
+            <div class="choice-buttons">
+                <button class="btn-choice btn-yes" onclick="navigatePage(3, 4)">Yes 😍</button>
+                <button class="btn-choice btn-no" id="escape-no-btn">No 😢</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: 3-LAYER INTERACTIVE CANDLE & CAKE ZONE -->
+    <div class="screen hidden" id="page-4">
+        <h2 class="wish-heading" id="cake-instruction">Blow the Candles! 🕯️</h2>
+        <div class="cake-area" id="interactive-cake-zone">
+            <div class="candles-box">
+                <div class="candle-real" onclick="blowCandle(this)"><div class="flame-real"></div></div>
+                <div class="candle-real" onclick="blowCandle(this)"><div class="flame-real"></div></div>
+            </div>
+            <div class="cake-3layer" id="grand-cake">
+                <div class="layer layer-top"></div>
+                <div class="layer layer-middle"></div>
+                <div class="layer layer-bottom"></div>
+            </div>
+        </div>
+        <p style="margin-top: 25px; font-weight: 600; color: #555; background: #fff; padding: 8px 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);" id="cake-hint-text">👉 Dono Candles par click karke unhe bujhao!</p>
+    </div>
+
+    <!-- PAGE 5: EXPLICIT MIDWAY GORGEOUS PHOTO PAGE -->
+    <div class="screen hidden" id="page-5">
+        <div class="photo-frame">
+            <img src="file_0000000008b871f88fd51ad11b87588e.png" alt="Pre Shayari Special Pic">
+        </div>
+        <button class="btn-next" onclick="navigatePage(5, 6)">Read Heartfelt Note ❤️</button>
+    </div>
+
+    <!-- PAGE 6: SHAYARI DEDICATION BOX -->
+    <div class="screen hidden" id="page-6">
+        <div class="shayari-card">
+            <p class="shayari-text">
+                Lagta hai aaj ke din Bhagwan ne fursat se ek bahut hi khoobsurat insaan banaya hoga. 🤍
+
+                Phir usme pyaari si muskaan, saaf dil aur duniya se bilkul alag ek khoobsurat shaksiyat bhar di hogi. 🌸
+
+                Tabhi to aaj ka din itna khaas hai... ❤️
+
+                🎂 Happy Birthday...
+
+                Bhagwan kare teri zindagi hamesha khushiyon, duaon aur muskurahaton se bhari rahe. ✨
+            </p>
+        </div>
+        <button class="btn-next" onclick="navigatePage(6, 7)">One Last Surprise 🎁</button>
+    </div>
+
+    <!-- PAGE 7: FINAL EPIC SUNSET PHOTO PAGE -->
+    <div class="screen hidden" id="page-7">
+        <div class="photo-frame">
+            <img src="file_00000000ff5471fdb443d7fce2d38c7e.png" alt="Final Blessed Moment">
+        </div>
+        <h2 style="color: #d63384; margin-top: 25px; font-weight: 750; font-size: 24px; text-shadow: 1px 2px 4px rgba(0,0,0,0.05);">Hamesha Haste Raho! 🌟</h2>
+    </div>
+
+    <script>
+        // --- 1. Dynamic Balloon Array Config (First 7 Images Allocated Here) ---
+        const balloonImages = [
+            'IMG_20260618_232634.jpg',
+            'IMG_20260710_221400.jpg',
+            'IMG_20260710_221416.jpg',
+            'IMG_20260710_221430.jpg',
+            'IMG_20260710_221444.jpg',
+            'Screenshot_20260618_235755_2.jpg',
+            'TempDragFile_20260415_200843.png'
+        ];
+        const balloonColors = ['#ff8fa3', '#7fe8fa', '#fff3e0', '#d8b4fe', '#a7f3d0', '#fed7aa', '#c7d2fe'];
+        const balloonBox = document.getElementById('balloon-box');
+
+        function initBalloons() {
+            balloonImages.forEach((imgName, idx) => {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                
+                let baseLeft = (idx * 14) + Math.random() * 2;
+                balloon.style.left = `${baseLeft}%`;
+                balloon.style.backgroundColor = balloonColors[idx % balloonColors.length];
+                
+                let animationDelay = Math.random() * 1.2;
+                let animationDuration = 6.5 + Math.random() * 2.5;
+                balloon.style.animationDelay = `${animationDelay}s`;
+                balloon.style.animationDuration = `${animationDuration}s`;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'balloon-img-wrap';
+                
+                const frameImg = document.createElement('img');
+                frameImg.src = imgName;
+                frameImg.onerror = function() { this.style.opacity = '0'; }; // Failsafe fallback
+                
+                wrapper.appendChild(frameImg);
+                balloon.appendChild(wrapper);
+                balloonBox.appendChild(balloon);
+            });
+        }
+        initBalloons();
+
+        // --- 2. Step-by-Step Countdown Mechanism ---
+        let countValue = 5;
+        const countdownNumberNode = document.getElementById('countdown-num');
+        const countTimer = setInterval(() => {
+            countValue--;
+            if (countValue > 0) {
+                countdownNumberNode.innerText = countValue;
+            } else {
+                clearInterval(countTimer);
+                confetti({ particleCount: 90, spread: 65, origin: { y: 0.6 } });
+                navigatePage(1, 2);
+            }
+        }, 1000);
+
+        function navigatePage(activeView, targetView) {
+            document.getElementById(`page-${activeView}`).classList.add('hidden');
+            document.getElementById(`page-${targetView}`).classList.remove('hidden');
+        }
+
+        // --- 3. Runaway 'No' Button Realtime Physics ---
+        const btnNoTarget = document.getElementById('escape-no-btn');
+        btnNoTarget.addEventListener('mouseenter', teleportButton);
+        btnNoTarget.addEventListener('touchstart', teleportButton);
+
+        function teleportButton() {
+            const shiftX = Math.random() * 160 - 80;
+            const shiftY = Math.random() * 160 - 80;
+            btnNoTarget.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+        }
+
+        // --- 4. Interactive Candle Blowing & Cake Slicing Logic ---
+        let activeFlames = 2;
+        const bladePointer = document.getElementById('app-knife');
+        const cakeZoneArea = document.getElementById('interactive-cake-zone');
+        const cakeBody = document.getElementById('grand-cake');
+        const textInstruction = document.getElementById('cake-instruction');
+        const textHint = document.getElementById('cake-hint-text');
+
+        function blowCandle(selectedCandle) {
+            const TargetFlame = selectedCandle.querySelector('.flame-real');
+            if (TargetFlame && !TargetFlame.classList.contains('blown')) {
+                TargetFlame.classList.add('blown');
+                activeFlames--;
+                
+                if (activeFlames === 0) {
+                    activateKnifeSlicingMode();
+                }
+            }
+        }
+
+        function activateKnifeSlicingMode() {
+            textInstruction.innerText = "Cut the Cake! 🔪";
+            textHint.innerText = "👉 Ab Cake ke upar touch/click karke use cut karo!";
+            
+            document.body.addEventListener('mousemove', moveKnifeMouse);
+            document.body.addEventListener('touchmove', moveKnifeTouch);
+            bladePointer.style.display = 'block';
+
+            cakeZoneArea.style.cursor = 'none';
+            cakeZoneArea.setAttribute('onclick', 'triggerCakeCut()');
+        }
+
+        function moveKnifeMouse(e) {
+            bladePointer.style.left = (e.clientX + 15) + 'px';
+            bladePointer.style.top = (e.clientY - 15) + 'px';
+        }
+        function moveKnifeTouch(e) {
+            let loc = e.touches[0];
+            bladePointer.style.left = (loc.clientX + 15) + 'px';
+            bladePointer.style.top = (loc.clientY - 15) + 'px';
+        }
+
+        function triggerCakeCut() {
+            cakeBody.classList.add('cut-done');
+            bladePointer.style.display = 'none';
+            textHint.innerText = "Perfect Cut! 😍 Yummy!";
+            
+            document.body.removeEventListener('mousemove', moveKnifeMouse);
+            document.body.removeEventListener('touchmove', moveKnifeTouch);
+
+            // Explosive Continuous Party Blasts
+            let durationLimit = 2.5 * 1000;
+            let endTimestamp = Date.now() + durationLimit;
+            (function celebrationLoop() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+                if (Date.now() < endTimestamp) { requestAnimationFrame(celebrationLoop); }
+            }());
+
+            setTimeout(() => {
+                navigatePage(4, 5);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
