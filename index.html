@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Vidhi! 💖</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; background: #1a0b2e; overflow: hidden; }
+        
+        .screen { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; z-index: 5; }
+        .hidden { display: none !important; }
+
+        /* Buttons & Styles */
+        button { padding: 15px 30px; font-size: 18px; border-radius: 30px; border: none; background: #ff4a85; color: white; cursor: pointer; margin-top: 20px; }
+
+        /* Countdown */
+        #countdown-num { font-size: 100px; color: #ff4a85; font-weight: bold; }
+
+        /* 3D Cake & Calendar Layout (Simplified for Reliability) */
+        .box { background: white; padding: 30px; border-radius: 20px; text-align: center; }
+        
+        /* 3D Elements Placeholder */
+        .cake-layer { width: 150px; height: 50px; background: #ff748c; margin: 5px auto; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: COUNTDOWN -->
+    <div class="screen" id="page-1">
+        <div id="countdown-num">5</div>
+        <p style="color:white">Preparing Magic...</p>
+        <button onclick="forceStart()">Start Now (If stuck)</button>
+    </div>
+
+    <!-- PAGE 2: CALENDAR -->
+    <div class="screen hidden" id="page-2">
+        <div class="box">
+            <h2 id="month-display">July 2007</h2>
+            <p>22nd July is the day!</p>
+            <button onclick="nextPage(3)">Continue</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: CAKE -->
+    <div class="screen hidden" id="page-3">
+        <h2 style="color:white">Blow Candles & Cut Cake</h2>
+        <div id="cake-area" onclick="cutCake()" style="cursor:pointer">
+            <div class="cake-layer" style="width:100px"></div>
+            <div class="cake-layer" style="width:130px"></div>
+            <div class="cake-layer" style="width:160px"></div>
+        </div>
+        <p id="cake-msg" style="color:white; margin-top:20px;">Tap on Cake to Cut!</p>
+    </div>
+
+    <!-- PAGE 4: FINAL -->
+    <div class="screen hidden" id="page-4">
+        <div class="box">
+            <h1>Happy Birthday Vidhi!</h1>
+            <p>Hamesha Haste Raho!</p>
+        </div>
+    </div>
+
+    <script>
+        // CORE NAVIGATION
+        function nextPage(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('page-' + id).classList.remove('hidden');
+        }
+
+        // FORCE START IF STUCK
+        function forceStart() {
+            nextPage(2);
+        }
+
+        // COUNTDOWN
+        let count = 5;
+        const cEl = document.getElementById('countdown-num');
+        const timer = setInterval(() => {
+            count--;
+            if(count > 0) {
+                cEl.innerText = count;
+            } else {
+                clearInterval(timer);
+                nextPage(2);
+            }
+        }, 1000);
+
+        // CAKE LOGIC
+        function cutCake() {
+            document.getElementById('cake-msg').innerText = "Cake Cut Successfully! Happy Birthday Vidhi!";
+            setTimeout(() => { nextPage(4); }, 1500);
+        }
+    </script>
+</body>
+</html>
 
