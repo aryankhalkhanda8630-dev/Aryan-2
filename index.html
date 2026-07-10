@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday Vidhi! 💖</title>
-    <!-- Confetti & Font Utilities -->
+    <!-- Confetti Utility with Fallback Handling -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Dosis:wght@700&display=swap" rel="stylesheet">
     
     <style>
         * {
+            box-style: border-box;
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -27,7 +28,7 @@
             -webkit-user-select: none;
         }
 
-        /* --- ADVANCED 3D ANIMATED BG LAYER (PERSISTENT) --- */
+        /* --- ADVANCED 3D ANIMATED BG LAYER --- */
         .bg-3d-universe {
             position: absolute;
             width: 100%;
@@ -69,7 +70,7 @@
             padding: 24px;
             transition: opacity 0.5s ease, transform 0.5s ease;
             z-index: 5;
-            perspective: 1200px; /* Activates 3D space */
+            perspective: 1200px;
         }
         .hidden { display: none !important; opacity: 0; pointer-events: none; }
 
@@ -85,16 +86,14 @@
             cursor: pointer;
             box-shadow: 0 8px 25px rgba(255, 74, 133, 0.4), inset 0 -4px 0 rgba(0,0,0,0.2);
             margin-top: 35px;
-            transform: style preserve-3d;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .btn-3d:hover {
             transform: translateY(-4px) scale(1.03);
             box-shadow: 0 12px 30px rgba(255, 74, 133, 0.6);
         }
-        .btn-3d:active { transform: translateY(1px); }
 
-        /* Premium Rigid Square 3D Photo Frames (Pages 5 & 7) */
+        /* Premium Rigid Square 3D Photo Frames */
         .square-frame-3d {
             width: 90%;
             aspect-ratio: 1 / 1;
@@ -133,7 +132,7 @@
         .giant-balloon {
             position: absolute;
             bottom: -450px;
-            width: 135px; /* Huge Size */
+            width: 135px;
             height: 155px;
             border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%;
             box-shadow: inset -10px -10px 30px rgba(0,0,0,0.3), 0 10px 25px rgba(0,0,0,0.3);
@@ -142,7 +141,6 @@
             flex-direction: column;
             align-items: center;
         }
-        /* Balloon Knot */
         .giant-balloon::after {
             content: "";
             position: absolute;
@@ -152,7 +150,6 @@
             border-right: 7px solid transparent;
             border-bottom: 11px solid rgba(0,0,0,0.3);
         }
-        /* Long Hanging Ribbon */
         .hanging-ribbon {
             position: absolute;
             top: 154px;
@@ -163,7 +160,6 @@
             display: flex;
             justify-content: center;
         }
-        /* Square Frame Attached to Ribbon */
         .ribbon-square-frame {
             position: absolute;
             bottom: -90px;
@@ -338,15 +334,14 @@
         .mid-l2 { width: 180px; height: 60px; background: #ff748c; z-index: 2; margin-bottom: -4px; }
         .top-l1 { width: 130px; height: 50px; background: #fff9c4; z-index: 3; margin-bottom: -4px; }
         
-        /* Realistic Candle Placed Directly ON TOP of the Cake */
+        /* Candles Box Sitting Directly ON TOP of the Cake */
         .candle-anchor-box {
             position: absolute;
-            top: -38px; /* Perfectly aligned sitting on the top layer */
+            top: -38px;
             width: 60px;
             display: flex;
             justify-content: space-between;
             z-index: 20;
-            transform: translateZ(10px);
         }
         .real-3d-candle {
             width: 10px;
@@ -410,7 +405,7 @@
             transform: translateX(-50%);
         }
 
-        /* --- PAGE 6: EXPENSIVE LOOKING SHAYARI PANEL --- */
+        /* --- PAGE 6: EXQUISITE SHAYARI PANEL --- */
         .luxury-shayari-panel {
             background: rgba(18, 11, 36, 0.75);
             padding: 40px 25px;
@@ -456,7 +451,7 @@
         </div>
     </div>
 
-    <!-- PAGE 2: MOTORIZED एनिमेटेड 3D CALENDAR -->
+    <!-- PAGE 2: ANIMATED 3D CALENDAR TIMEMACHINE -->
     <div class="screen hidden" id="page-2">
         <h2 style="color: #fff; margin-bottom: 25px; font-weight: 800; font-size: 26px;">📅 Setting the Date...</h2>
         <div class="calendar-3d-deck">
@@ -484,7 +479,6 @@
         <h2 style="color: #fff; font-size: 30px; margin-bottom: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);" id="cake-main-instruction">Blow the Candles! 🕯️</h2>
         <div class="cake-platform-3d" id="cake-clickable-zone">
             <div class="cake-assembly" id="main-3d-cake">
-                <!-- Candles are perfectly anchored directly ON TOP of the Cake -->
                 <div class="candle-anchor-box">
                     <div class="real-3d-candle" onclick="extinguishFlame(this)"><div class="flame-core"></div></div>
                     <div class="real-3d-candle" onclick="extinguishFlame(this)"><div class="flame-core"></div></div>
@@ -532,10 +526,19 @@
     </div>
 
     <script>
-        // --- 1. Massive Balloons & Ribbon Frame Assignment ---
-        const balloonImages = [
-            'IMG_20260618_232634.jpg',
-            'IMG_20260710_221400.jpg',
-            'IMG_20260710_221416.jpg',
-            'IMG_20260710_221430.jpg',
-            'IMG_20260710_221444.jpg',
+        // Safe execution wrapper to guarantee script never breaks
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Massive Balloons Setup ---
+            const balloonImages = [
+                'IMG_20260618_232634.jpg',
+                'IMG_20260710_221400.jpg',
+                'IMG_20260710_221416.jpg',
+                'IMG_20260710_221430.jpg',
+                'IMG_20260710_221444.jpg',
+                'Screenshot_20260618_235755_2.jpg',
+                'TempDragFile_20260415_200843.png'
+            ];
+            const balloonGradients = [
+                'radial-gradient(circle at 30% 30%, #ff7ea5, #ff4a85)',
+                'radial-gradient(circle at
