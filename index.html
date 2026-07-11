@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Bestie! ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .active {
+            display: flex;
+        }
+
+        /* Screen 1: Matrix Rain & Balloons */
+        #canvas-matrix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        #balloon-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: auto;
+        }
+        .balloon {
+            position: absolute;
+            width: 85px;
+            height: 105px;
+            background: radial-gradient(circle at 30% 30%, #ff4d6d, #c71585);
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            cursor: pointer;
+            animation: floatUp 7s linear infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3), 0 4px 10px rgba(255,77,109,0.4);
+        }
+        .balloon::before {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 38px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 7px solid #c71585;
+        }
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -26px;
+            left: 42px;
+            width: 2px;
+            height: 20px;
+            background-color: rgba(255,255,255,0.6);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(1); opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0.8; }
+        }
+        #countdown-box {
+            position: absolute;
+            top: 20px;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff4d6d;
+            text-shadow: 0 0 15px rgba(255,77,109,0.8);
+            z-index: 5;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid #ff4d6d;
+        }
+
+        /* Screen 2: Neon Text */
+        .neon-text {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d, 0 0 40px #ff4d6d;
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* Screen 3: Password */
+        .card-panel {
+            background: rgba(20, 20, 20, 0.85);
+            border: 2px solid #ff4d6d;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 77, 109, 0.5);
+            max-width: 400px;
+            width: 90%;
+        }
+        .placeholder-img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        .pass-input {
+            width: 80%;
+            padding: 12px;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #ff4d6d;
+            background: #111;
+            color: #fff;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        .btn-submit {
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+        .btn-submit:hover {
+            background: #e03b5a;
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.8);
+        }
+
+        /* Screen 4 & 5: Proposals & Cake */
+        .pink-theme {
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 100%);
+            color: #4a0e17;
+        }
+        .pink-card {
+            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(224, 59, 90, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border: 3px solid #ff85a1;
+        }
+        .pink-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            position: relative;
+        }
+        .btn-choice {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        .btn-yes {
+            background: #ff4d6d;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+        }
+        .btn-no {
+            background: #a3a3a3;
+            color: white;
+            position: relative;
+        }
+
+        /* Floating Hearts Layer for romance */
+        .heart-particle {
+            position: absolute;
+            color: rgba(255, 77, 109, 0.7);
+            font-size: 20px;
+            pointer-events: none;
+            animation: floatHeart 4s linear forwards;
+            z-index: 999;
+        }
+        @keyframes floatHeart {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.4) rotate(360deg); opacity: 0; }
+        }
+
+        /* Screen 7: Love Letter */
+        .letter-box {
+            background: #fffdf6;
+            color: #2b2214;
+            padding: 40px;
+            border-radius: 10px;
+            width: 85%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border-left: 8px solid #ff4d6d;
+            transform: rotate(-1deg);
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .letter-box h3 {
+            margin-bottom: 15px;
+            color: #ff4d6d;
+            font-size: 1.6rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Hearts Container -->
+    <div id="hearts-layer" style="position: absolute; width:100%; height:100%; pointer-events:none; z-index:99;"></div>
+
+    <!-- SCREEN 1: Matrix Rain, Balloons and Countdown -->
+    <div id="screen1" class="screen active">
+        <div id="countdown-box">10</div>
+        <canvas id="canvas-matrix"></canvas>
+        <div id="balloon-container"></div>
+    </div>
+
+    <!-- SCREEN 2: Neon Happy Birthday Bestie -->
+    <div id="screen2" class="screen">
+        <div class="neon-text">Happy Birthday<br>bestie ❤️</div>
+    </div>
+
+    <!-- SCREEN 3: Password Verification Screen (With 4-Image Placeholder) -->
+    <div id="screen3" class="screen">
+        <div class="card-panel">
+            <!-- 4 no wala image slot -->
+            <div style="background: #222; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed #ff4d6d;">
+                <span style="font-size: 0.9rem; color: #aaa; display:block; margin-bottom: 5px;">[ 4-No Image Placeholder ]</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                    <div style="background:#333; height:60px; border-radius:4px;"></div>
+                    <div style="background:#333; height:60px; border-radius:4px;"></div>
+                    <div style="background:#333; height:60px; border-radius:4px;"></div>
+                    <div style="background:#333; height:60px; border-radius:4px;"></div>
+                </div>
+            </div>
+            <h2 style="margin-bottom: 15px; font-size: 1.3rem; color: #ff4d6d;">Enter Secret Code to Unlock</h2>
+            <input type="password" id="passInput" class="pass-input" maxlength="4" placeholder="••••">
+            <br>
+            <button class="btn-submit" onclick="verifyPassword()">Unlock Love</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: Cute Proposal Popup (YES/NO Style) -->
+    <div id="screen4" class="screen pink-theme">
+        <div class="pink-card">
+            <!-- Cute Cartoon Placeholder -->
+            <div style="width:120px; height:100px; background:#ffccd5; border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:2rem;">✨</div>
+            <h2>I made something special for u<br>do u wanna see it? 😊</h2>
+            <div class="btn-group">
+                <button class="btn-choice btn-yes" onclick="nextScreen(5)">YES</button>
+                <button class="btn-choice btn-no" id="run-btn1" onmouseover="runAway(this)">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: Birthday Cake Screen -->
+    <div id="screen5" class="screen pink-theme">
+        <div class="pink-card">
+            <h2>Happy Birthday, Shreya</h2>
+            <p style="margin-top: -10px; font-size: 0.95rem; color: #7a3b46;">Are you excited for what's next?</p>
+            
+            <!-- Beautiful Dedicated Cake Design Box -->
+            <div style="margin: 25px auto; width: 200px; height: 160px; background: #fff0f3; border-radius: 15px; border: 2px solid #ffb3c1; position: relative; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <div style="font-size: 3rem; animation: pulse 1s infinite alternate;">🎂</div>
+                <div style="background: #ff4d6d; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-top: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.15);">
+                    HAPPY BIRTHDAY
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-choice btn-yes" style="width: 100%;" onclick="nextScreen(6)">Yes, Show Me! ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: 4-Image Grid Display Repeated -->
+    <div id="screen6" class="screen">
+        <div class="card-panel" style="max-width: 450px;">
+            <h2 style="color: #ff4d6d; font-size: 1.4rem; margin-bottom: 20px;">Our Beautiful Memories Together 📸</h2>
+            <!-- Grid Layout representing the 4-image set -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
+                <div style="background: #222; aspect-ratio: 1; border-radius: 8px; border: 2px solid #ff4d6d; display: flex; align-items: center; justify-content: center; color: #555;">Image 1</div>
+                <div style="background: #222; aspect-ratio: 1; border-radius: 8px; border: 2px solid #ff4d6d; display: flex; align-items: center; justify-content: center; color: #555;">Image 2</div>
+                <div style="background: #222; aspect-ratio: 1; border-radius: 8px; border: 2px solid #ff4d6d; display: flex; align-items: center; justify-content: center; color: #555;">Image 3</div>
+                <div style="background: #222; aspect-ratio: 1; border-radius: 8px; border: 2px solid #ff4d6d; display: flex; align-items: center; justify-content: center; color: #555;">Image 4</div>
+            </div>
+            <button class="btn-submit" onclick="nextScreen(7)">Read My Letter ✉️</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 7: The Romantic Letter -->
+    <div id="screen7" class="screen" style="background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9));">
+        <div class="letter-box">
+            <h3>To My Favorite Human, 💖</h3>
+            <p>Tum meri life ka sabse special hissa ho. Har mushkil me saath rehna, meri pagalpan ko jhelna aur mujhe hamesha support karna—ye sirf ek sachha bestie hi kar sakta hai. Aaj ke tumhare is din ko main bohot zyada unique banana chahta tha. Tum hamesha aise hi khush raho, muskuraati raho aur jo chahe wo achieve karo!</p>
+            <p style="margin-top: 15px; font-weight: bold; text-align: right; color: #ff4d6d;">Yours Forever & Always ✨</p>
+            <button class="btn-submit" style="margin-top: 20px; width: 100%;" onclick="nextScreen(8)">Click for Last Surprise 🎁</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 8: Final Beautiful End Image & Message Screen -->
+    <div id="screen8" class="screen">
+        <div class="card-panel" style="border-color: #ff85a1; background: rgba(15,15,15,0.95);">
+            <div style="width: 100%; height: 200px; background: #222; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: #ff4d6d; font-size: 1.2rem; border: 2px dashed #ff85a1;">
+                [ Last Final Special Image Slot ]
+            </div>
+            <h1 style="font-size: 1.8rem; color: #ff4d6d; margin-bottom: 10px;">Forever Best Friends! Infinity & Beyond ✨</h1>
+            <p style="color: #ccc; font-size: 0.95rem; line-height: 1.4;">No matter where life takes us, you will always have a special romantic core spot in my heart. Happy Birthday once again! 🎉</p>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Effect Configuration
+        const canvas = document.getElementById('canvas-matrix');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Falling matrix characters containing customized components
+        const matrixChars = "HBDSHREYA2207BESTIELOVE❤️✨🎁🎂🎉".split("");
+        const fontSize = 16;
+        let columns = canvas.width / fontSize;
+        let drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#ff4d6d'; // Romantic pinkish matrix color requested
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        let matrixInterval = setInterval(drawMatrix, 33);
+
+        // Dynamic Balloon Generation
+        const balloonContainer = document.getElementById('balloon-container');
+        // Pre-declared structured text elements for balloons to emerge uniformly distributed
+        const labels = ["Shreya", "22-07", "Bestie", "Love", "HBD", "Forever", "Smile", "Joy"];
+        
+        function createBalloons() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    // Spread coordinates naturally across dimensions
+                    balloon.style.left = Math.random() * 85 + 'vw';
+                    balloon.style.animationDelay = Math.random() * 4 + 's';
+                    
+                    // Assign specific labels or standard heart accents uniformly
+                    balloon.innerText = labels[i % labels.length];
+                    
+                    // Click processing function
+                    balloon.addEventListener('click', () => {
+                        createHeartsBurst(balloon.offsetLeft + 40, balloon.offsetTop + 40);
+                        balloon.remove();
+                    });
+                    balloonContainer.appendChild(balloon);
+                }, i * 400);
+            }
+        }
+        createBalloons();
+
+        // Countdown Timer Engine
+        let timeLeft = 10;
+        const countdownBox = document.getElementById('countdown-box');
+        
+        let countdownInterval = setInterval(() => {
+            timeLeft--;
+            countdownBox.innerText = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                clearInterval(matrixInterval);
+                nextScreen(2);
+                
+                // Stay on Neon Screen briefly before advancing to Code Unlock sequence
+                setTimeout(() => {
+                    nextScreen(3);
+                }, 4000);
+            }
+        }, 1000);
+
+        // Screen Switching Manager
+        function nextScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + screenNum).classList.add('active');
+        }
+
+        // Passcode Lock Processing Engine
+        function verifyPassword() {
+            const inputVal = document.getElementById('passInput').value;
+            if (inputVal === "2207") {
+                nextScreen(4);
+            } else {
+                alert("Incorrect Magical Code! Try again sweetie! 😉");
+                document.getElementById('passInput').value = "";
+            }
+        }
+
+        // Interactive No Button Escape Trick Engine
+        function runAway(element) {
+            const x = Math.random() * (window.innerWidth - element.offsetWidth - 40);
+            const y = Math.random() * (window.innerHeight - element.offsetHeight - 40);
+            element.style.position = 'fixed';
+            element.style.left = x + 'px';
+            element.style.top = y + 'px';
+        }
+
+        // Decorative Floating Heart Effects Generator
+        const heartsLayer = document.getElementById('hearts-layer');
+        function createHeartsBurst(x, y) {
+            for(let i=0; i<10; i++) {
+                const h = document.createElement('div');
+                h.className = 'heart-particle';
+                h.innerHTML = '❤️';
+                h.style.left = x + 'px';
+                h.style.top = y + 'px';
+                h.style.fontSize = Math.random() * 20 + 15 + 'px';
+                h.style.transform = `translate(${Math.random()*100 - 50}px, ${Math.random()*100 - 50}px)`;
+                heartsLayer.appendChild(h);
+                setTimeout(() => h.remove(), 4000);
+            }
+        }
+
+        // Ambient romantic layout builder background heart generator
+        setInterval(() => {
+            const h = document.createElement('div');
+            h.className = 'heart-particle';
+            h.innerHTML = ['❤️','💖','✨','🌸'][Math.floor(Math.random()*4)];
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.top = '105vh';
+            h.style.fontSize = Math.random() * 15 + 15 + 'px';
+            heartsLayer.appendChild(h);
+            setTimeout(() => h.remove(), 5000);
+        }, 600);
+    </script>
+</body>
+</html>
