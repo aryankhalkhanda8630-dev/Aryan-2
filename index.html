@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Bestie!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+        }
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .page.active {
+            display: flex;
+        }
+
+        /* Page 1: White Matrix Rain & Balloons */
+        #canvas-matrix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        #countdown-box {
+            position: absolute;
+            font-size: 8rem;
+            font-weight: 700;
+            color: #ffffff;
+            z-index: 5;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8);
+            pointer-events: none;
+        }
+        .balloon-container {
+            position: absolute;
+            bottom: -200px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: floatUp 10s linear forwards;
+        }
+        .balloon {
+            width: 90px;
+            height: 110px;
+            background: radial-gradient(circle at 30% 30%, #ff4d6d, #c9184a);
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            position: relative;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .balloon::before {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 41px;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 6px solid #c9184a;
+        }
+        .ribbon {
+            width: 2px;
+            height: 120px;
+            background-color: #fff;
+            opacity: 0.7;
+            position: relative;
+        }
+        .ribbon-photo {
+            position: absolute;
+            bottom: 20px;
+            left: -34px;
+            width: 70px;
+            height: 70px;
+            border: 3px solid #fff;
+            border-radius: 8px;
+            background-color: #333;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: #ccc;
+            overflow: hidden;
+            text-align: center;
+            word-break: break-all;
+            padding: 2px;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-130vh) rotate(5deg); }
+        }
+
+        #matrix-birthday-text {
+            position: absolute;
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            color: #fff;
+            text-align: center;
+            z-index: 6;
+            text-shadow: 0 0 15px #fff, 0 0 30px #ff4d6d;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Page 2: Passcode Lock Screen */
+        .pink-bg {
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 100%);
+            color: #4a4a4a;
+        }
+        .passcode-container {
+            display: flex;
+            width: 85%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(233, 76, 131, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid #fff;
+        }
+        .passcode-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-right: 20px;
+            border-right: 2px dashed #ffb3c6;
+        }
+        .passcode-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-left: 20px;
+        }
+        .photo-oval-frame {
+            width: 200px;
+            height: 250px;
+            border-radius: 50% / 45%;
+            border: 8px double #ff4d6d;
+            background: #eee url('file_0000000008b871f88fd51ad11b87588e.png') center/cover no-repeat;
+            position: relative;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .photo-label-fallback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: #777;
+            text-align: center;
+            padding: 10px;
+            pointer-events: none;
+        }
+        .passcode-title {
+            font-size: 1.5rem;
+            color: #ff4d6d;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .dots-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .dot {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #ffb3c6;
+            border-radius: 12px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4d6d;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .key {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #ffe5ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ff4d6d;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.1s ease;
+        }
+        .key:active {
+            transform: scale(0.92);
+            background: #ff4d6d;
+            color: #fff;
+        }
+
+        /* Page 3: Pop-up Special Request */
+        .popup-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 450px;
+            width: 90%;
+            border: 3px solid #ffc2d1;
+        }
+        .popup-card svg.illustration {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        .popup-title {
+            font-size: 1.4rem;
+            color: #ff4d6d;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .popup-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 12px 35px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+        .btn-yes {
+            background: #ff4d6d;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+        }
+        .btn-yes:hover { transform: translateY(-2px); }
+        .btn-no {
+            background: #fff;
+            color: #ff4d6d;
+            border: 2px solid #ff4d6d;
+            position: relative;
+        }
+
+        /* Page 4: Interactive Cake Screen */
+        .cake-header {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: #ff4d6d;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #fff;
+        }
+        .cake-subheader {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .cake-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .cake {
+            width: 220px;
+            height: 120px;
+            background: #fbc4ab;
+            border-radius: 20px 20px 10px 10px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-bottom: 8px solid #f08080;
+        }
+        .cake-cream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #fff;
+            border-radius: 20px 20px 0 0;
+        }
+        .cake-cream-drop {
+            position: absolute;
+            top: 25px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+        }
+        .candle {
+            width: 12px;
+            height: 60px;
+            background: linear-gradient(to right, #ccff33, #9ef01a);
+            position: absolute;
+            top: -55px;
+            left: 104px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+        .flame {
+            width: 16px;
+            height: 24px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,0 C75,40 75,70 50,100 C25,70 25,40 50,0 Z' fill='%23ffb703'/%3E%3C/svg%3E") center/contain no-repeat;
+            position: absolute;
+            top: -22px;
+            left: -2px;
+            animation: flicker 0.6s infinite alternate;
+        }
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            100% { transform: scale(1.15) rotate(3deg); opacity: 1; filter: drop-shadow(0 0 8px #ffb703); }
+        }
+        .cake-text-inner {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 55px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #d90429;
+            letter-spacing: 1px;
+        }
+        .knife {
+            position: absolute;
+            width: 70px;
+            height: 20px;
+            background: #dee2e6;
+            border-radius: 0 10px 24px 0;
+            top: 40px;
+            right: -60px;
+            transform: rotate(-30deg);
+            display: none;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            border-left: 8px solid #6c757d;
+        }
+        .cake-cut-line {
+            position: absolute;
+            left: 109px;
+            top: 0;
+            width: 3px;
+            height: 120px;
+            background: rgba(217, 4, 41, 0.5);
+            display: none;
+            border-dashed: 2px #fff;
+        }
+        .instruction-toast {
+            margin-top: 30px;
+            background: rgba(255, 77, 109, 0.15);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #ff4d6d;
+            font-weight: 600;
+            font-size: 0.95rem;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Page 5: Shayari & Envelope Opening */
+        .romantic-bg {
+            background: radial-gradient(circle at center, #fff0f3 0%, #ffccd5 100%);
+            color: #495057;
+        }
+        .big-photo-view {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #eee url('file_0000000008b871f88fd51ad11b87588e.png') center/cover no-repeat;
+            margin-bottom: 25px;
+        }
+        .envelope-wrapper {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            background: #ff4d6d;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        .envelope-wrapper:hover {
+            transform: translateY(-5px);
+        }
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 100px solid #ff758f;
+            transform-origin: top;
+            transition: transform 0.4s ease, z-index 0.2s;
+            z-index: 3;
+        }
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-back {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid #ff8fa3;
+            border-right: 140px solid #ff8fa3;
+            border-bottom: 90px solid #ff758f;
+            border-radius: 0 0 12px 12px;
+            z-index: 2;
+        }
+        .letter-content {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            width: 250px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 1;
+            transition: all 0.5s ease;
+            max-height: 150px;
+            overflow: hidden;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        .envelope-wrapper.open .letter-content {
+            top: -240px;
+            height: auto;
+            max-height: 400px;
+            width: 320px;
+            left: -20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 5;
+            font-size: 13px;
+            padding: 20px;
+        }
+        .shayari-text {
+            text-align: center;
+            color: #333;
+            font-weight: 400;
+        }
+        .shayari-text p {
+            margin-bottom: 12px;
+        }
+        .next-arrow-btn {
+            margin-top: 20px;
+            background: #ff4d6d;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            display: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255,77,109,0.3);
+        }
+
+        /* Page 6: Final Full Photo Screen */
+        .final-bg {
+            background: #000;
+        }
+        .final-photo-container {
+            width: 90%;
+            max-width: 500px;
+            height: 65%;
+            border: 6px solid #fff;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+            background: #222 url('file_00000000ff5471fdb443d7fce2d38c7e.png') center/cover no-repeat;
+            border-radius: 12px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .final-fallback-label {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 0;
+            font-size: 12px;
+            color: #ddd;
+        }
+        .romantic-footer {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #ff4d6d;
+            text-shadow: 0 0 10px rgba(255,77,109,0.5);
+            text-align: center;
+            animation: breathe 2s infinite alternate;
+        }
+        @keyframes breathe {
+            0% { transform: scale(0.96); opacity: 0.8; }
+            100% { transform: scale(1.04); opacity: 1; }
+        }
+
+        /* Floating background elements for premium feel */
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 77, 109, 0.2);
+            pointer-events: none;
+            z-index: 0;
+            animation: floatHeart 6s linear infinite;
+        }
+        @keyframes floatHeart {
+            0% { transform: translateY(105vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: MATRIX & COUNTDOWN -->
+    <div id="page1" class="page active">
+        <canvas id="canvas-matrix"></canvas>
+        <div id="countdown-box">5</div>
+        <div id="matrix-birthday-text">Happy Birthday<br>bestie</div>
+    </div>
+
+    <!-- PAGE 2: SECURITY PASSCODE -->
+    <div id="page2" class="page pink-bg">
+        <div class="passcode-container">
+            <div class="passcode-left">
+                <div class="photo-oval-frame">
+                    <div class="photo-label-fallback">file_0000000008b871f88fd51ad11b87588e.png</div>
+                </div>
+            </div>
+            <div class="passcode-right">
+                <div class="passcode-title">Enter a passcode</div>
+                <div class="dots-container">
+                    <div class="dot" id="dot0"></div>
+                    <div class="dot" id="dot1"></div>
+                    <div class="dot" id="dot2"></div>
+                    <div class="dot" id="dot3"></div>
+                </div>
+                <div class="keypad">
+                    <div class="key" onclick="pressKey('1')">1</div>
+                    <div class="key" onclick="pressKey('2')">2</div>
+                    <div class="key" onclick="pressKey('3')">3</div>
+                    <div class="key" onclick="pressKey('4')">4</div>
+                    <div class="key" onclick="pressKey('5')">5</div>
+                    <div class="key" onclick="pressKey('6')">6</div>
+                    <div class="key" onclick="pressKey('7')">7</div>
+                    <div class="key" onclick="pressKey('8')">8</div>
+                    <div class="key" onclick="pressKey('9')">9</div>
+                    <div class="key" style="visibility: hidden;">*</div>
+                    <div class="key" onclick="pressKey('0')">0</div>
+                    <div class="key" onclick="clearPasscode()" style="font-size: 0.95rem; display: flex; align-items: center; justify-content: center;">Clear</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: SPECIAL REQUEST POP-UP -->
+    <div id="page3" class="page pink-bg">
+        <div class="popup-card">
+            <svg class="illustration" viewBox="0 0 100 100" width="120" height="120">
+                <circle cx="35" cy="55" r="18" fill="#e9ecef"/>
+                <circle cx="65" cy="55" r="18" fill="#dee2e6"/>
+                <circle cx="22" cy="42" r="6" fill="#e9ecef"/>
+                <circle cx="78" cy="42" r="6" fill="#dee2e6"/>
+                <path d="M50,30 C50,20 40,20 40,30 C40,40 50,45 50,50 C50,45 60,40 60,30 C60,20 50,20 50,30 Z" fill="#ff4d6d"/>
+            </svg>
+            <div class="popup-title">I made something special for u</div>
+            <div class="popup-subtitle">do u wanna see it?</div>
+            <div class="btn-group">
+                <button class="btn btn-yes" onclick="nextPage(4)">YES</button>
+                <button class="btn btn-no" id="btn-no-run" onmouseover="runAwayNoBtn()" onclick="runAwayNoBtn()">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: CAKE EXTRACTION -->
+    <div id="page4" class="page pink-bg">
+        <div class="cake-header">Happy Birthday, Bestie</div>
+        <div class="cake-subheader">Are you excited for what's next?</div>
+        
+        <div class="cake-container" id="cake-box" onclick="handleCakeInteraction()">
+            <div class="candle" id="custom-candle">
+                <div class="flame" id="candle-flame"></div>
+            </div>
+            <div class="cake">
+                <div class="cake-cream"></div>
+                <div class="cake-cream-drop" style="left: 20px;"></div>
+                <div class="cake-cream-drop" style="left: 70px; height: 30px;"></div>
+                <div class="cake-cream-drop" style="left: 130px; height: 25px;"></div>
+                <div class="cake-cream-drop" style="left: 180px;"></div>
+                
+                <div class="cake-text-inner">HAPPY BIRTHDAY</div>
+                <div class="cake-cut-line" id="cut-line"></div>
+            </div>
+            <div class="knife" id="cake-knife"></div>
+        </div>
+
+        <div class="instruction-toast" id="cake-toast">Tap the candle to blow it out! 🎂</div>
+    </div>
+
+    <!-- PAGE 5: SHAYARI ENVELOPE -->
+    <div id="page5" class="page romantic-bg">
+        <div class="big-photo-view"></div>
+        
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="envelope-flap"></div>
+            <div class="letter-content">
+                <div class="shayari-text">
+                    <p>Lagta hai aaj ke din Bhagwan ne fursat se ek bahut hi khoobsurat insaan banaya hoga. 🤍</p>
+                    <p>Phir usme pyaari si muskaan, saaf dil aur duniya se bilkul alag ek khoobsurat shaksiyat bhar di hogi. 🌸</p>
+                    <p>Tabhi to aaj ka din itna khaas hai... ❤️</p>
+                    <p style="font-weight: bold; color: #ff4d6d; font-size: 1.1rem; margin: 10px 0;">🎂 Happy Birthday...</p>
+                    <p>Bhagwan kare teri zindagi hamesha khushiyon, duaon aur muskurahaton se bhari rahe. ✨</p>
+                </div>
+            </div>
+            <div class="envelope-back"></div>
+        </div>
+
+        <button class="next-arrow-btn" id="letter-next-btn" onclick="nextPage(6)">Tap to reveal the final surprise ✨</button>
+    </div>
+
+    <!-- PAGE 6: FINAL PHOTO LAYOUT -->
+    <div id="page6" class="page final-bg">
+        <div class="final-photo-container">
+            <div class="final-fallback-label">file_00000000ff5471fdb443d7fce2d38c7e.png</div>
+        </div>
+        <div class="romantic-footer">Hamesha mere sath rehna... ❤️</div>
+    </div>
+
+    <script>
+        // Array configurations
+        const balloonPhotos = [
+            "IMG_20260618_232634.jpg",
+            "IMG_20260710_221400.jpg",
+            "IMG_20260710_221416.jpg",
+            "IMG_20260710_221430.jpg",
+            "IMG_20260710_221444.jpg",
+            "IMG_20260710_221455.jpg",
+            "Screenshot_20260618_235755.jpg",
+            "TempDragFile_20260415_200843.png"
+        ];
+
+        // --- MATRIX SYSTEMS ---
+        const canvas = document.getElementById('canvas-matrix');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        const fontSize = 16;
+        let columns = canvas.width / fontSize;
+        const rainDrops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#FFFFFF'; // Explicit White Color Drops
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        let matrixInterval = setInterval(drawMatrix, 30);
+
+        // --- DISTANCED BALLOONS ---
+        let currentCount = 5;
+        const countdownBox = document.getElementById('countdown-box');
+        
+        let balloonIndex = 0;
+        function spawnSingleBalloon() {
+            if (balloonIndex >= balloonPhotos.length) return;
+            
+            const container = document.createElement('div');
+            container.className = 'balloon-container';
+            
+            const segments = balloonPhotos.length;
+            const segmentWidth = window.innerWidth / segments;
+            const randomLeft = (balloonIndex * segmentWidth) + (Math.random() * (segmentWidth - 100)) + 20;
+            container.style.left = randomLeft + 'px';
+            
+            const duration = 8 + Math.random() * 4;
+            container.style.animationDuration = duration + 's';
+
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            
+            const colors = ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c6', '#c9184a', '#ffccd5'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            balloon.style.background = `radial-gradient(circle at 30% 30%, ${randomColor}, #a4133c)`;
+
+            const ribbon = document.createElement('div');
+            ribbon.className = 'ribbon';
+
+            const photoFrame = document.createElement('div');
+            photoFrame.className = 'ribbon-photo';
+            photoFrame.innerText = balloonPhotos[balloonIndex];
+            photoFrame.style.backgroundImage = `url('${balloonPhotos[balloonIndex]}')`;
+
+            ribbon.appendChild(photoFrame);
+            container.appendChild(balloon);
+            container.appendChild(ribbon);
+            document.getElementById('page1').appendChild(container);
+            
+            balloonIndex++;
+        }
+
+        let balloonTimer = setInterval(spawnSingleBalloon, 600);
+
+        let countdownInterval = setInterval(() => {
+            currentCount--;
+            if (currentCount > 0) {
+                countdownBox.innerText = currentCount;
+            } else if (currentCount === 0) {
+                countdownBox.style.display = 'none';
+                const bdayText = document.getElementById('matrix-birthday-text');
+                bdayText.style.opacity = '1';
+                
+                setTimeout(() => {
+                    clearInterval(matrixInterval);
+                    clearInterval(countdownInterval);
+                    clearInterval(balloonTimer);
+                    nextPage(2);
+                }, 2800);
+            }
+        }, 1200);
+
+        // --- PAGE TRANSITIONS ---
+        function nextPage(pageNum) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + pageNum).classList.add('active');
+            
+            if (pageNum >= 2 && pageNum <= 5) {
+                initHeartsBg();
+            }
+        }
+
+        // --- PASSCODE ENGINE (2207) ---
+        let enteredCode = "";
+        const correctCode = "2207";
+        
+        function pressKey(num) {
+            if (enteredCode.length < 4) {
+                enteredCode += num;
+                updatePasscodeDots();
+            }
+            if (enteredCode.length === 4) {
+                setTimeout(() => {
+                    if (enteredCode === correctCode) {
+                        nextPage(3);
+                    } else {
+                        alert("Wrong Passcode! Try again bestie 🤍");
+                        clearPasscode();
+                    }
+                }, 250);
+            }
+        }
+        
+        function clearPasscode() {
+            enteredCode = "";
+            updatePasscodeDots();
+        }
+        
+        function updatePasscodeDots() {
+            for (let i = 0; i < 4; i++) {
+                const dot = document.getElementById('dot' + i);
+                if (i < enteredCode.length) {
+                    dot.innerText = "❤";
+                } else {
+                    dot.innerText = "";
+                }
+            }
+        }
+
+        // --- NO BUTTON ESCAPE ENGINE ---
+        function runAwayNoBtn() {
+            const btn = document.getElementById('btn-no-run');
+            const newTop = Math.random() * (window.innerHeight - 80) + 20;
+            const newLeft = Math.random() * (window.innerWidth - 120) + 20;
+            btn.style.position = 'fixed';
+            btn.style.top = newTop + 'px';
+            btn.style.left = newLeft + 'px';
+        }
+
+        // --- INTERACTIVE CAKE DYNAMICS ---
+        let cakeState = "candle-lit";
+        
+        function handleCakeInteraction() {
+            const toast = document.getElementById('cake-toast');
+            const flame = document.getElementById('candle-flame');
+            const knife = document.getElementById('cake-knife');
+            const cutLine = document.getElementById('cut-line');
+            
+            if (cakeState === "candle-lit") {
+                flame.style.display = 'none';
+                toast.innerText = "Awesome! Now tap the cake to cut it with the knife! 🔪";
+                knife.style.display = 'block';
+                cakeState = "candle-blown";
+            } else if (cakeState === "candle-blown") {
+                knife.style.transform = 'translate(-60px, 40px) rotate(-10deg)';
+                setTimeout(() => {
+                    cutLine.style.display = 'block';
+                    toast.innerText = "Wow! Beautiful! Let's read your special letter now... ❤";
+                    cakeState = "cake-cut";
+                    
+                    setTimeout(() => {
+                        nextPage(5);
+                    }, 2000);
+                }, 400);
+            }
+        }
+
+        // --- LETTER SYSTEM ---
+        function openEnvelope() {
+            const env = document.getElementById('envelope');
+            env.classList.add('open');
+            setTimeout(() => {
+                document.getElementById('letter-next-btn').style.display = 'block';
+            }, 800);
+        }
+
+        // --- FLOATING BACKGROUND ROMANCE HEARTS ---
+        let heartsInit = false;
+        function initHeartsBg() {
+            if (heartsInit) return;
+            heartsInit = true;
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 7000);
+            }, 600);
+        }
+    </script>
+</body>
+</html>
