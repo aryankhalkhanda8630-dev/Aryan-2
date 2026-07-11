@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Special</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; height: 100vh; overflow: hidden; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }
+        
+        /* 1. MATRIX RAIN LAYER */
+        #matrix { position: absolute; top: 0; left: 0; z-index: 0; }
+
+        .screen { position: absolute; width: 100%; max-width: 500px; height: 100%; z-index: 5; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s; }
+        .hidden { display: none !important; }
+
+        /* BALLOONS */
+        .balloon { position: absolute; bottom: -150px; width: 50px; height: 60px; background: red; border-radius: 50%; opacity: 0.8; animation: floatUp linear forwards; }
+        @keyframes floatUp { 100% { transform: translateY(-120vh); } }
+
+        /* TEXT ANIMATIONS */
+        .jump-text { position: absolute; font-size: 35px; color: #ff0055; font-weight: 900; text-align: center; text-shadow: 0 0 10px white; z-index: 20; animation: bounceInUp 1s ease-out forwards; }
+        @keyframes bounceInUp { 0% { transform: translateY(100vh); opacity: 0; } 60% { transform: translateY(-20px); opacity: 1; } 100% { transform: translateY(0); } }
+
+        /* CAKE & CANDLE */
+        .cake { width: 200px; height: 150px; background: #8b4513; margin-top: 50px; position: relative; cursor: crosshair; }
+        .candle { width: 10px; height: 40px; background: white; position: absolute; top: -40px; left: 95px; }
+        .flame { width: 10px; height: 15px; background: orange; border-radius: 50%; position: absolute; top: -15px; }
+        
+        /* KNIFE */
+        #knife { position: fixed; width: 80px; height: 20px; background: silver; display: none; pointer-events: none; z-index: 100; border-radius: 0 10px 10px 0; }
+
+        /* FLOWERS */
+        .flower { position: absolute; font-size: 20px; animation: fall 3s linear forwards; z-index: 30; }
+        @keyframes fall { 0% { transform: translateY(-50px); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+
+    <!-- INTRO SCREEN -->
+    <div class="screen" id="p1">
+        <div id="balloon-container"></div>
+        <div id="count" style="font-size: 100px; color: white; z-index: 10;">5</div>
+        <h1 id="reveal-text" class="jump-text hidden">Happy Birthday Bestie!</h1>
+    </div>
+
+    <!-- CAKE SCREEN -->
+    <div class="screen hidden" id="p2">
+        <div class="cake" onclick="cutCake()" id="cake-obj">
+            <div class="candle" id="candle" onclick="blowCandle(event)">
+                <div class="flame" id="flame"></div>
+            </div>
+        </div>
+        <h1 id="cake-reveal-text" class="jump-text hidden">Happy Birthday Bestie!</h1>
+    </div>
+
+    <div id="knife"></div>
+
+    <script>
+        // MATRIX RAIN
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const drops = Array(Math.ceil(canvas.width/15)).fill(0);
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ff0055";
+            drops.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(65+Math.random()*26), i*15, y*15);
+                if (y*15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(draw, 50);
+
+        // BALLOONS
+        function spawnBalloons() {
+            for(let i=0; i<10; i++) {
+                let b = document.createElement('div');
+                b.className = 'balloon';
+                b.style.left = Math.random() * 90 + '%';
+                b.style.background = `hsl(${Math.random()*360}, 70%, 60%)`;
+                b.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                document.getElementById('balloon-container').appendChild(b);
+            }
+        }
+        spawnBalloons();
+
+        // COUNTDOWN
+        let c = 5;
+        let int = setInterval(() => {
+            c--;
+            if(c > 0) document.getElementById('count').innerText = c;
+            else {
+                clearInterval(int);
+                document.getElementById('count').classList.add('hidden');
+                let txt = document.getElementById('reveal-text');
+                txt.classList.remove('hidden');
+                triggerFlowers();
+                setTimeout(() => { document.getElementById('p1').classList.add('hidden'); document.getElementById('p2').classList.remove('hidden'); }, 3000);
+            }
+        }, 1000);
+
+        // BLOW CANDLE & KNIFE LOGIC
+        let candleLit = true;
+        function blowCandle(e) {
+            e.stopPropagation();
+            if(candleLit) {
+                document.getElementById('flame').style.display = 'none';
+                candleLit = false;
+                // KNIFE APPEARS ONLY NOW
+                document.getElementById('knife').style.display = 'block';
+                document.addEventListener('mousemove', (e) => {
+                    let k = document.getElementById('knife');
+                    k.style.left = e.clientX + 10 + 'px';
+                    k.style.top = e.clientY + 10 + 'px';
+                });
+            }
+        }
+
+        // CUT CAKE
+        function cutCake() {
+            if(!candleLit) {
+                document.getElementById('cake-obj').style.background = "grey";
+                let txt = document.getElementById('cake-reveal-text');
+                txt.classList.remove('hidden');
+                document.getElementById('knife').style.display = 'none'; // hide knife
+                triggerFlowers();
+            }
+        }
+
+        // FLOWERS
+        function triggerFlowers() {
+            for(let i=0; i<20; i++) {
+                let f = document.createElement('div');
+                f.className = 'flower';
+                f.innerHTML = '🌸';
+                f.style.left = Math.random() * 100 + '%';
+                f.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(f);
+                setTimeout(() => f.remove(), 3000);
+            }
+        }
+    </script>
+</body>
+</html>
